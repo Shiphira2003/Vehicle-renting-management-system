@@ -1,0 +1,93 @@
+
+
+###
+GET http://localhost:8000/
+Content-Type: application/json
+
+###
+GET http://localhost:8000/api/users
+Content-Type: application/json
+
+###
+POST http://localhost:8000/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Ndirangu",
+  "lastName": "wamaitha",
+  "contactPhone": "0778656469",
+  "email": "ndirangushiphira01@gmail.com",
+  "password": "12345678",
+  "address": "123 mailRoad"
+  
+}
+
+###
+POST http://localhost:8000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "lucy@gmail.com",
+  "password": "12345678"
+}
+
+###
+POST http://localhost:8000/api/vehicle-specifications
+Content-Type: application/json
+
+{
+  "manufacturer": "Mazda",
+  "model": "Camry",
+  "year": 2024,
+  "fuelType": "Petrol",
+  "engineCapacity": "2.5L",
+  "transmission": "Automatic",
+  "seatingCapacity": 7,
+  "color": "chacoal black",
+  "features": "Bluetooth, Backup Camera, Lane Assist"
+}
+###
+POST http://localhost:8000/api/vehicles
+Content-Type: application/json
+
+{
+ 
+  "vehicleSpecId": 3,
+  "rentalRate": 90.25,
+  "availability": false
+}
+###
+POST http://localhost:8000/api/locations
+Content-Type: application/json
+
+{
+  
+  "name": "Suburb Depot",
+  "address": "456 Oak Avenue, Townsville"
+}
+###
+POST http://localhost:8000/api/bookings
+Content-Type: application/json
+
+{
+  
+  "userId": 1,
+  "vehicleId": 2,
+  "locationId": 3,
+  "bookingDate": "2024-07-20T14:30:00Z",
+  "returnDate": "2024-07-22T14:30:00Z",
+  "totalAmount": 180.50,
+  "bookingStatus": "Pending"
+}
+###
+POST http://localhost:8000/api/payments
+Content-Type: application/json
+
+{
+  
+  "bookingId": 3,
+  "amount": 375.50,
+  "paymentStatus": "Pending",
+  "paymentMethod": "Bank Transfer",
+  "transactionId": "TXN987654321"
+}
