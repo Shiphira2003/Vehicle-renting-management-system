@@ -1,6 +1,6 @@
 // src/controllers/booking.controller.ts
 
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import {
   createBookingService,
   deleteBookingService,
@@ -10,7 +10,7 @@ import {
 } from "../bookings/bookings.service"; 
 
 
-export const getBookings = async (req: Request, res: Response, next: NextFunction) => {
+export const getBookings = async (req: Request, res: Response) => {
   try {
     const bookings = await getBookingsService();
     if (!bookings || bookings.length === 0) {
@@ -18,13 +18,13 @@ export const getBookings = async (req: Request, res: Response, next: NextFunctio
       return;
     }
     res.status(200).json(bookings);
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to place bookings" });
   }
 };
 
 
-export const getBookingById = async (req: Request, res: Response, next: NextFunction) => {
+export const getBookingById = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -38,13 +38,13 @@ export const getBookingById = async (req: Request, res: Response, next: NextFunc
       return;
     }
     res.status(200).json(booking);
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to get a booking" });
   }
 };
 
 
-export const createBooking = async (req: Request, res: Response, next: NextFunction) => {
+export const createBooking = async (req: Request, res: Response) => {
   const {
     userId,
     vehicleId,
@@ -74,13 +74,13 @@ export const createBooking = async (req: Request, res: Response, next: NextFunct
       
     });
     res.status(201).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+     res.status(500).json({ error:error.message || "Failed to place booking" });
   }
 };
 
 
-export const updateBooking = async (req: Request, res: Response, next: NextFunction) => {
+export const updateBooking = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -115,13 +115,13 @@ export const updateBooking = async (req: Request, res: Response, next: NextFunct
       
     });
     res.status(200).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to update booking:" });
   }
 };
 
 
-export const deleteBooking = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteBooking = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -137,7 +137,7 @@ export const deleteBooking = async (req: Request, res: Response, next: NextFunct
 
     const message = await deleteBookingService(id);
     res.status(200).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to delete booking" });
   }
 };

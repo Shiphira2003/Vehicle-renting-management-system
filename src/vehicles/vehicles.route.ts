@@ -4,6 +4,7 @@ import {
   deleteVehicle,
   getVehicles,
   getVehicleById,
+  
   updateVehicle,
 } from "../vehicles/vehicles.controller"; 
 
@@ -14,6 +15,9 @@ vehicleRouter.get("/vehicles", getVehicles);
 
 // Get a vehicle by ID
 vehicleRouter.get("/vehicles/:id", getVehicleById);
+
+// Get vehicles by name (manufacturer name from vehicle specification)
+
 
 // Create a new vehicle
 vehicleRouter.post("/vehicles", createVehicle);

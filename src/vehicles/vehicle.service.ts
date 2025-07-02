@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, } from "drizzle-orm";
 import db from "../drizzle/db"; 
-import { vehicleTable } from "../drizzle/schema";
+import { vehicleTable} from "../drizzle/schema";
 import type { InferModel } from "drizzle-orm";
 
 // Define types for inserting and selecting vehicles
@@ -20,11 +20,12 @@ export const getVehicleByIdService = async (id: number): Promise<TVehicleSelect 
 };
 
 
+
 export const createVehicleService = async (
   data: TVehicleInsert
 ): Promise<string> => {
   await db.insert(vehicleTable).values(data).returning();
-  return "Vehicle created successfully 🚗";
+  return "Vehicle added successfully 🚗";
 };
 
 

@@ -1,6 +1,6 @@
 
 
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import {
   createPaymentService,
   deletePaymentService,
@@ -10,7 +10,7 @@ import {
 } from "../payments/payments.service"; 
 
 
-export const getPayments = async (req: Request, res: Response, next: NextFunction) => {
+export const getPayments = async (req: Request, res: Response) => {
   try {
     const payments = await getPaymentsService();
     if (!payments || payments.length === 0) {
@@ -18,13 +18,13 @@ export const getPayments = async (req: Request, res: Response, next: NextFunctio
       return;
     }
     res.status(200).json(payments);
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to fetch payments" });
   }
 };
 
 
-export const getPaymentById = async (req: Request, res: Response, next: NextFunction) => {
+export const getPaymentById = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -38,13 +38,13 @@ export const getPaymentById = async (req: Request, res: Response, next: NextFunc
       return;
     }
     res.status(200).json(payment);
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to fetch payment" });
   }
 };
 
 
-export const createPayment = async (req: Request, res: Response, next: NextFunction) => {
+export const createPayment = async (req: Request, res: Response) => {
   const {
     bookingId,
     amount,
@@ -71,13 +71,13 @@ export const createPayment = async (req: Request, res: Response, next: NextFunct
       
     });
     res.status(201).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+     res.status(500).json({ error:error.message || "Failed to create payments" });
   }
 };
 
 
-export const updatePayment = async (req: Request, res: Response, next: NextFunction) => {
+export const updatePayment = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -110,13 +110,13 @@ export const updatePayment = async (req: Request, res: Response, next: NextFunct
       
     });
     res.status(200).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to update payments" });
   }
 };
 
 
-export const deletePayment = async (req: Request, res: Response, next: NextFunction) => {
+export const deletePayment = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -132,7 +132,7 @@ export const deletePayment = async (req: Request, res: Response, next: NextFunct
 
     const message = await deletePaymentService(id);
     res.status(200).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to delete payments" });
   }
 };

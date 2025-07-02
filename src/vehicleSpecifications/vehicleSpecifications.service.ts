@@ -1,6 +1,6 @@
 // src/services/vehicleSpecification.service.ts
 
-import { eq } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 import db from "../drizzle/db"; 
 import { vehicleSpecificationTable } from "../drizzle/schema"; 
 import type { InferModel } from "drizzle-orm";
@@ -29,6 +29,12 @@ export const createVehicleSpecificationService = async (
   return "Vehicle specification added successfully 🚗";
 };
 
+// search by manufacturer
+export const searchByManufacturerservices = async(manufacturer: string): Promise<TVehicleSpecificationSelect[]>=>{
+  return await db.query.vehicleSpecificationTable.findMany({
+    where: ilike(vehicleSpecificationTable.manufacturer,`%${manufacturer}%`)
+  })
+}
 
 export const updateVehicleSpecificationService = async (
   id: number,

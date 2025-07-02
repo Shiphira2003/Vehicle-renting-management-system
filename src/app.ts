@@ -9,6 +9,8 @@ import { vehicleRouter } from './vehicles/vehicles.route';
 import { locationRouter } from './location/location.route';
 import { bookingRouter } from './bookings/bookings.route';
 import { paymentRouter } from './payments/payments.route';
+import { ticketRouter } from './ticket/ticket.route';
+
 // import { rateLimiterMiddleware } from "./middleware/rateLimiter";
 // import cors from "cors"
 
@@ -39,4 +41,5 @@ app.use('/api',vehicleRouter)
 app.use('/api',locationRouter)
 app.use('/api',bookingRouter)
 app.use('/api',paymentRouter)
+app.use('/api',ticketRouter)
 export default app;

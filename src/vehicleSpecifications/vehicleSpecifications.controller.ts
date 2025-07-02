@@ -1,15 +1,16 @@
 
 
-import { Request, Response, NextFunction } from "express";
+import { Request, Response} from "express";
 import {
   createVehicleSpecificationService,
   deleteVehicleSpecificationService,
   getVehicleSpecificationByIdService,
   getVehicleSpecificationsService,
+  searchByManufacturerservices,
   updateVehicleSpecificationService,
 } from "../vehicleSpecifications/vehicleSpecifications.service"; 
 
-export const getVehicleSpecifications = async (req: Request, res: Response, next: NextFunction) => {
+export const getVehicleSpecifications = async (req: Request, res: Response) => {
   try {
     const vehicleSpecifications = await getVehicleSpecificationsService();
     if (!vehicleSpecifications || vehicleSpecifications.length === 0) {
@@ -18,12 +19,12 @@ export const getVehicleSpecifications = async (req: Request, res: Response, next
     }
     res.status(200).json(vehicleSpecifications);
   } catch (error) {
-    next(error);
+   
   }
 };
 
 
-export const getVehicleSpecificationById = async (req: Request, res: Response, next: NextFunction) => {
+export const getVehicleSpecificationById = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -38,12 +39,31 @@ export const getVehicleSpecificationById = async (req: Request, res: Response, n
     }
     res.status(200).json(vehicleSpecification);
   } catch (error) {
-    next(error);
+   
   }
 };
 
+// Search by manufacturer
+export const searchByManufacturer = async(req: Request, res: Response) =>{
+  const manufacturer = req.query. manufacturer as string;
+  if(!manufacturer){
+    res.status(404).json({error: "Manufacturer Name IS Needed!"})
+    return;
+  }
+  try {
+    const search = await searchByManufacturerservices(manufacturer)
+    if(!search || search.length === 0){
+      res.status(404).json({ message: "Vehicle specification by this name was not found" });
+    }else{
+      res.status(200).json(search);
+    }
+    
+  } catch (error:any) {
+    res.status(404).json({error: error.message || "Error Occured!" });
+  }
+}
 
-export const createVehicleSpecification = async (req: Request, res: Response, next: NextFunction) => {
+export const createVehicleSpecification = async (req: Request, res: Response) => {
   const {
     manufacturer,
     model,
@@ -75,13 +95,13 @@ export const createVehicleSpecification = async (req: Request, res: Response, ne
       features,
     });
     res.status(201).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to add vehiclespecs" });
   }
 };
 
 
-export const updateVehicleSpecification = async (req: Request, res: Response, next: NextFunction) => {
+export const updateVehicleSpecification = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -119,13 +139,13 @@ export const updateVehicleSpecification = async (req: Request, res: Response, ne
       features,
     });
     res.status(200).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+     res.status(500).json({ error:error.message || "Failed to update vehiclespecs" });
   }
 };
 
 
-export const deleteVehicleSpecification = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteVehicleSpecification = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -141,7 +161,7 @@ export const deleteVehicleSpecification = async (req: Request, res: Response, ne
 
     const message = await deleteVehicleSpecificationService(id);
     res.status(200).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to delete vehiclespecs" });
   }
 };

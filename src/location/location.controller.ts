@@ -1,6 +1,6 @@
 // src/controllers/location.controller.ts
 
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import {
   createLocationService,
   deleteLocationService,
@@ -10,7 +10,7 @@ import {
 } from "../location/location.service";
 
 
-export const getLocations = async (req: Request, res: Response, next: NextFunction) => {
+export const getLocations = async (req: Request, res: Response) => {
   try {
     const locations = await getLocationsService();
     if (!locations || locations.length === 0) {
@@ -18,13 +18,13 @@ export const getLocations = async (req: Request, res: Response, next: NextFuncti
       return;
     }
     res.status(200).json(locations);
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+     res.status(500).json({ error:error.message || "Failed to fetch location" });
   }
 };
 
 
-export const getLocationById = async (req: Request, res: Response, next: NextFunction) => {
+export const getLocationById = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -38,13 +38,13 @@ export const getLocationById = async (req: Request, res: Response, next: NextFun
       return;
     }
     res.status(200).json(location);
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+     res.status(500).json({ error:error.message || "Failed to fetch location" });
   }
 };
 
 
-export const createLocation = async (req: Request, res: Response, next: NextFunction) => {
+export const createLocation = async (req: Request, res: Response) => {
   const {
     name,
     address,
@@ -65,13 +65,13 @@ export const createLocation = async (req: Request, res: Response, next: NextFunc
       
     });
     res.status(201).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to add location" });
   }
 };
 
 
-export const updateLocation = async (req: Request, res: Response, next: NextFunction) => {
+export const updateLocation = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -98,13 +98,13 @@ export const updateLocation = async (req: Request, res: Response, next: NextFunc
       
     });
     res.status(200).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to update location" });
   }
 };
 
 
-export const deleteLocation = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteLocation = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid ID format" });
@@ -120,7 +120,7 @@ export const deleteLocation = async (req: Request, res: Response, next: NextFunc
 
     const message = await deleteLocationService(id);
     res.status(200).json({ message });
-  } catch (error) {
-    next(error);
+  } catch (error:any) {
+    res.status(500).json({ error:error.message || "Failed to delete location" });
   }
 };

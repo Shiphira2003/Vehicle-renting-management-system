@@ -10,6 +10,7 @@ import {
   getVehicleSpecifications,
   getVehicleSpecificationById,
   updateVehicleSpecification,
+  searchByManufacturer,
 } from "../vehicleSpecifications/vehicleSpecifications.controller"; // Adjust path as needed
 
 export const vehicleSpecificationRouter = Router();
@@ -28,3 +29,6 @@ vehicleSpecificationRouter.put("/vehicle-specifications/:id", updateVehicleSpeci
 
 // Delete a vehicle specification
 vehicleSpecificationRouter.delete("/vehicle-specifications/:id", deleteVehicleSpecification);
+
+// search by manufacturer
+vehicleSpecificationRouter.get("/vehicle-specifications", searchByManufacturer);

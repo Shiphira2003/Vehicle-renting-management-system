@@ -32,6 +32,13 @@ Content-Type: application/json
 }
 
 ###
+GET http://localhost:8000/api/vehicle-specifications
+
+###
+GET http://localhost:8000/api/vehicle-specifications?manufacturer=m
+
+
+###
 POST http://localhost:8000/api/vehicle-specifications
 Content-Type: application/json
 
@@ -46,6 +53,8 @@ Content-Type: application/json
   "color": "chacoal black",
   "features": "Bluetooth, Backup Camera, Lane Assist"
 }
+
+
 ###
 POST http://localhost:8000/api/vehicles
 Content-Type: application/json
@@ -56,6 +65,14 @@ Content-Type: application/json
   "rentalRate": 90.25,
   "availability": false
 }
+
+### Get Vehicles by Manufacturer Name
+GET http://localhost:8000/api/vehicles/name/Toyota
+Accept: application/json
+
+### Get Vehicles by another Manufacturer 
+GET http://localhost:8000/api/vehicles/name/Mazda
+Accept: application/json
 ###
 POST http://localhost:8000/api/locations
 Content-Type: application/json
@@ -91,3 +108,34 @@ Content-Type: application/json
   "paymentMethod": "Bank Transfer",
   "transactionId": "TXN987654321"
 }
+### Create a new Ticket
+POST http://localhost:8000/api/tickets
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "subject": "Payment Gateway Error",
+  "description": "My payment failed when trying to confirm booking ID 123."
+}
+### Get all Tickets
+GET http://localhost:8000/api/tickets
+Accept: application/json
+
+### Get Ticket by ID
+GET http://localhost:8000/api/tickets/1
+Accept: application/json
+
+### Update an existing Ticket
+PUT http://localhost:8000/api/tickets/1
+Content-Type: application/json
+
+{
+  "status": "Resolved",
+  "description": "Issue resolved. Customer contacted and rebooked vehicle. Original description: I am unable to book a vehicle for July 25-27. The system shows no availability."
+}
+
+### Delete a Ticket
+DELETE http://localhost:8000/api/tickets/2
+Accept: application/json
+
+
