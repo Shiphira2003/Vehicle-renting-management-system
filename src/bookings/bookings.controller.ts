@@ -67,8 +67,8 @@ export const createBooking = async (req: Request, res: Response) => {
       userId,
       vehicleId,
       locationId,
-      bookingDate: new Date(bookingDate), 
-      returnDate: new Date(returnDate),  
+      bookingDate: new Date(bookingDate).toISOString(), 
+      returnDate: new Date(returnDate).toISOString(),  
       totalAmount,
       bookingStatus: bookingStatus || 'Pending',
       
@@ -108,8 +108,8 @@ export const updateBooking = async (req: Request, res: Response) => {
       userId,
       vehicleId,
       locationId,
-      bookingDate: bookingDate ? new Date(bookingDate) : undefined, 
-      returnDate: returnDate ? new Date(returnDate) : undefined,   
+      bookingDate: bookingDate ? new Date(bookingDate).toISOString() : undefined, 
+      returnDate: returnDate ? new Date(returnDate).toISOString() : undefined,   
       totalAmount,
       bookingStatus,
       

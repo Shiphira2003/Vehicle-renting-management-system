@@ -2,12 +2,12 @@
 
 import { eq, ilike } from "drizzle-orm";
 import db from "../drizzle/db"; 
-import { vehicleSpecificationTable } from "../drizzle/schema"; 
-import type { InferModel } from "drizzle-orm";
+import {TVehicleSpecificationInsert, TVehicleSpecificationSelect, vehicleSpecificationTable } from "../drizzle/schema"; 
+// import type { InferModel } from "drizzle-orm";
 
-// Define types for inserting and selecting vehicle specifications
-export type TVehicleSpecificationInsert = InferModel<typeof vehicleSpecificationTable, "insert">;
-export type TVehicleSpecificationSelect = InferModel<typeof vehicleSpecificationTable, "select">;
+// // Define types for inserting and selecting vehicle specifications
+// export type TVehicleSpecificationInsert = InferModel<typeof vehicleSpecificationTable, "insert">;
+// export type TVehicleSpecificationSelect = InferModel<typeof vehicleSpecificationTable, "select">;
 
 
 export const getVehicleSpecificationsService = async (): Promise<TVehicleSpecificationSelect[]> => {

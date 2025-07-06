@@ -45,6 +45,9 @@ export const getPaymentById = async (req: Request, res: Response) => {
 
 
 export const createPayment = async (req: Request, res: Response) => {
+
+console.log("Received request body for createPayment:", req.body);
+
   const {
     bookingId,
     amount,

@@ -11,7 +11,7 @@ import {
   getVehicleSpecificationById,
   updateVehicleSpecification,
   searchByManufacturer,
-} from "../vehicleSpecifications/vehicleSpecifications.controller"; // Adjust path as needed
+} from "../vehicleSpecifications/vehicleSpecifications.controller"; 
 
 export const vehicleSpecificationRouter = Router();
 

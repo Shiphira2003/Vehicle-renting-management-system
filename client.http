@@ -5,7 +5,7 @@ GET http://localhost:8000/
 Content-Type: application/json
 
 ###
-GET http://localhost:8000/api/users
+GET  http://localhost:8000/api/users
 Content-Type: application/json
 
 ###
@@ -13,7 +13,7 @@ POST http://localhost:8000/api/auth/register
 Content-Type: application/json
 
 {
-  "firstName": "Ndirangu",
+  "firstName": "caleb",
   "lastName": "wamaitha",
   "contactPhone": "0778656469",
   "email": "ndirangushiphira01@gmail.com",
@@ -27,7 +27,7 @@ POST http://localhost:8000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "lucy@gmail.com",
+  "email": "ndirangushiphira01@gmail.com",
   "password": "12345678"
 }
 
@@ -96,6 +96,10 @@ Content-Type: application/json
   "totalAmount": 180.50,
   "bookingStatus": "Pending"
 }
+
+###
+GET  http://localhost:8000/api/bookings
+Content-Type: application/json
 ###
 POST http://localhost:8000/api/payments
 Content-Type: application/json
@@ -138,4 +142,56 @@ Content-Type: application/json
 DELETE http://localhost:8000/api/tickets/2
 Accept: application/json
 
+
+### Create a new Booking
+# IMPORTANT: Replace {existing_user_id}, {existing_vehicle_id}, and {existing_location_id}
+# with actual integer IDs from your users, vehicles, and locations tables.
+POST http://localhost:8000/api/bookings
+Content-Type: application/json
+
+{
+  "userId": 1,       
+  "vehicleId": 1,     
+  "locationId": 1,   
+  "bookingDate": "2024-07-10",
+  "returnDate": "2024-07-15",
+  "totalAmount": 375.50,
+  "bookingStatus": "Confirmed"
+}
+
+
+### Create another Booking (with default status)
+POST http://localhost:8000/api/bookings
+Content-Type: application/json
+
+{
+  "userId": 2,        
+  "vehicleId": 3,     
+  "locationId": 2,    
+  "bookingDate": "2024-08-01",
+  "returnDate": "2024-08-05",
+  "totalAmount": 480.00
+}
+
+
+### Update an existing Booking
+# Replace {id} with an actual bookingId.
+PUT http://localhost:8000/api/bookings/1
+Content-Type: application/json
+
+{
+  "returnDate": "2024-07-16",
+  "bookingStatus": "Completed"
+}
+
+
+### Create a new Location (Example 1: Main Branch)
+POST http://localhost:8000/api/locations
+Content-Type: application/json
+
+{
+  "name": "Main Branch Office",
+  "address": "123 Main Street, Cityville",
+  "contact": "555-111-2222"
+}
 

@@ -1,178 +1,207 @@
-import { pgTable, serial, text, varchar, timestamp, boolean, pgEnum, integer, unique, primaryKey, real } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import {pgTable,serial,varchar,integer,timestamp,numeric,pgEnum,boolean,text,date,} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
-// Define Enums
-export const roleEnum = pgEnum('role', ['user', 'admin']);
-export const bookingStatusEnum = pgEnum('booking_status', ['Pending', 'Confirmed', 'Cancelled', 'Completed']);
-export const paymentStatusEnum = pgEnum('payment_status', ['Pending', 'Completed', 'Failed']);
+export const roleEnum = pgEnum("role", ["user", "admin", "disabled"]);
+export const fuelTypeEnum = pgEnum("fuelType", ["Petrol", "Diesel", "Electric", "Hybrid"]);
+export const transmissionEnum = pgEnum("transmission", ["Manual", "Automatic"]);
+export const bookingStatusEnum = pgEnum("bookingStatus", ["Pending", "Confirmed", "Completed", "Cancelled"]);
+export const paymentStatusEnum = pgEnum("paymentStatus", ["Pending", "Paid", "Failed"]);
+export const paymentMethodEnum = pgEnum("paymentMethod", ["Stripe", "Mpesa"]);
 
-// --- Table Definitions ---
 
-// User Table
-export const userTable = pgTable('users', {
-  userId: serial('user_id').primaryKey(),
-  firstName: varchar('firstname', { length: 256 }).notNull(),
-  lastName: varchar('lastname', { length: 256 }).notNull(),
-  email: varchar('email', { length: 256 }).unique().notNull(),
-  password: varchar('password', { length: 256 }).notNull(),
-  contactPhone: varchar('contact_phone', { length: 20 }),
-  address: varchar('address', { length: 256 }),
-  role: roleEnum('role').default('user').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+// Users Table
+
+
+export const userTable = pgTable("userTable", {
+  userId: serial("userId").primaryKey(),
+  firstName: varchar("firstname", { length: 255 }).notNull(),
+  lastName: varchar("lastname", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
+  contact: varchar("contact", { length: 20 }),
+  address: varchar("address", { length: 255 }),
+  role: roleEnum("role").default("user").notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
-// Vehicle Specification Table
-export const vehicleSpecificationTable = pgTable('vehicle_specifications', {
-  vehicleSpecId: serial('vehicleSpec_id').primaryKey(),
-  manufacturer: varchar('manufacturer', { length: 256 }).notNull(),
-  model: varchar('model', { length: 256 }).notNull(),
-  year: integer('year').notNull(),
-  fuelType: varchar('fuel_type', { length: 50 }).notNull(),
-  engineCapacity: varchar('engine_capacity', { length: 50 }),
-  transmission: varchar('transmission', { length: 50 }),
-  seatingCapacity: integer('seating_capacity').notNull(),
-  color: varchar('color', { length: 50 }),
-  features: text('features'),
+
+// Vehicle Specifications Table
+
+
+export const vehicleSpecificationTable = pgTable("vehicleSpecificationTables", {
+  vehicleSpecId: serial("vehicleSpecId").primaryKey(),
+  manufacturer: varchar("manufacturer", { length: 255 }).notNull(),
+  model: varchar("model", { length: 255 }).notNull(),
+  year: integer("year").notNull(),
+  fuelType: fuelTypeEnum("fuelType").notNull(),
+  engineCapacity: varchar("engineCapacity", { length: 50 }),
+  transmission: transmissionEnum("transmission").notNull(),
+  seatingCapacity: integer("seatingCapacity").notNull(),
+  color: varchar("color", { length: 50 }),
+  features: text("features"),
 });
+
 
 // Vehicles Table
-export const vehicleTable = pgTable('vehicles', {
-  vehicleId: serial('vehicle_id').primaryKey(),
-  vehicleSpecId: integer('vehicleSpec_id').notNull(),
-  rentalRate: real('rental_rate').notNull(),
-  availability: boolean('availability').default(true).notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+
+
+export const vehicleTable = pgTable("vehicleTable", {
+  vehicleId: serial("vehicleId").primaryKey(),
+  vehicleSpecId: integer("vehicleSpecId")
+    .notNull()
+    .references(() => vehicleSpecificationTable.vehicleSpecId, { onDelete: "cascade" }),
+  rentalRate: numeric("rentalRate", { precision: 10, scale: 2 }).notNull(),
+  availability: boolean("availability").default(true),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
-// Location and Branches Table
-export const locationTable = pgTable('locations', {
-  locationId: serial('location_id').primaryKey(),
-  name: varchar('name', { length: 256 }).notNull(),
-  address: varchar('address', { length: 256 }).notNull(),
-  contactPhone: varchar('contact_phone', { length: 20 }),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+
+// Locations Table
+
+
+export const locations = pgTable("locations", {
+  locationId: serial("locationId").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  address: varchar("address", { length: 255 }).notNull(),
+  contact: varchar("contact", { length: 20 }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
 });
+
 
 // Bookings Table
-export const bookingTable = pgTable('bookings', {
-  bookingId: serial('booking_id').primaryKey(),
-  userId: integer('user_id').notNull(),
-  vehicleId: integer('vehicle_id').notNull(),
-  locationId: integer('location_id').notNull(),
-  bookingDate: timestamp('booking_date').notNull(),
-  returnDate: timestamp('return_date').notNull(),
-  totalAmount: real('total_amount').notNull(),
-  bookingStatus: bookingStatusEnum('booking_status').default('Pending').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+
+
+export const bookingsTable = pgTable("bookingsTable", {
+  bookingId: serial("bookingId").primaryKey(),
+  userId: integer("userId").notNull().references(() => userTable.userId, { onDelete: "cascade" }),
+  vehicleId: integer("vehicleId").notNull().references(() => vehicleTable.vehicleId, { onDelete: "cascade" }),
+  locationId: integer("locationId").notNull().references(() => locations.locationId, { onDelete: "cascade" }),
+  bookingDate: date("bookingDate").notNull(),
+  returnDate: date("returnDate").notNull(),
+  totalAmount: numeric("totalAmount", { precision: 10, scale: 2 }).notNull(),
+  bookingStatus: bookingStatusEnum("bookingStatus").default("Pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
 });
+
 
 // Payments Table
-export const paymentTable = pgTable('payments', {
-  paymentId: serial('payment_id').primaryKey(),
-  bookingId: integer('booking_id').notNull(),
-  amount: real('amount').notNull(),
-  paymentStatus: paymentStatusEnum('payment_status').default('Pending').notNull(),
-  paymentDate: timestamp('payment_date').defaultNow().notNull(),
-  paymentMethod: varchar('payment_method', { length: 100 }).notNull(),
-  transactionId: varchar('transaction_id', { length: 256 }).unique(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+
+
+export const payments = pgTable("payments", {
+  paymentId: serial("paymentId").primaryKey(),
+  bookingId: integer("bookingId")
+    .notNull()
+    .references(() => bookingsTable.bookingId, { onDelete: "cascade" }),
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  paymentStatus: paymentStatusEnum("paymentStatus").default("Pending").notNull(),
+  paymentDate: timestamp("paymentDate").defaultNow(),
+  paymentMethod: paymentMethodEnum("paymentMethod"),
+  transactionId: varchar("transactionId", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
-// Customer Support Tickets Table
-export const customerSupportTicketTable = pgTable('customer_support_tickets', {
-  ticketId: serial('ticket_id').primaryKey(),
-  userId: integer('user_id').notNull(),
-  subject: varchar('subject', { length: 256 }).notNull(),
-  description: text('description').notNull(),
-  status: varchar('status', { length: 50 }).default('Open').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+
+// Support Tickets Table
+
+
+export const customerSupportTicketTable = pgTable("customerSupportTicketTables", {
+  ticketId: serial("ticketId").primaryKey(),
+  userId: integer("userId")
+    .notNull()
+    .references(() => userTable.userId, { onDelete: "cascade" }),
+  subject: varchar("subject", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  status: varchar("status", { length: 50 }).default("Open"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
-// --- Table Relations ---
+//infer types
 
-// User Relations
-export const userRelations = relations(userTable, ({ many }) => ({
-  bookings: many(bookingTable),
-  customerSupportTickets: many(customerSupportTicketTable),
+// USERS
+export type TUserInsert = typeof userTable.$inferInsert;
+export type TUserSelect = typeof userTable.$inferSelect;
+
+// VEHICLE SPECIFICATIONS
+export type TVehicleSpecificationInsert = typeof vehicleSpecificationTable.$inferInsert;
+export type TVehicleSpecificationSelect = typeof vehicleSpecificationTable.$inferSelect;
+
+// VEHICLES
+export type TVehicleInsert = typeof vehicleTable.$inferInsert;
+export type TVehicleSelect = typeof vehicleTable.$inferSelect;
+
+// LOCATIONS
+export type TLocationInsert = typeof locations.$inferInsert;
+export type TLocationSelect = typeof locations.$inferSelect;
+
+// BOOKINGS
+export type TBookingInsert = typeof bookingsTable.$inferInsert;
+export type TBookingSelect = typeof bookingsTable.$inferSelect;
+
+// PAYMENTS
+export type TPaymentInsert = typeof payments.$inferInsert;
+export type TPaymentSelect = typeof payments.$inferSelect;
+
+// SUPPORT TICKETS
+export type TSupportTicketInsert = typeof customerSupportTicketTable.$inferInsert;
+export type TSupportTicketSelect = typeof customerSupportTicketTable.$inferSelect;
+
+
+// RELATIONS
+
+
+export const usersRelations = relations(userTable, ({ many }) => ({
+  bookings: many(bookingsTable),
+  supportTickets: many(customerSupportTicketTable),
 }));
 
-// Vehicle Specifications Relations
-export const vehicleSpecificationRelations = relations(vehicleSpecificationTable, ({ many }) => ({
+export const locationsRelations = relations(locations, ({ many }) => ({
+  bookings: many(bookingsTable),
+}));
+
+export const vehicleSpecsRelations = relations(vehicleSpecificationTable, ({ many }) => ({
   vehicles: many(vehicleTable),
 }));
 
-// Vehicles Relations
-export const vehicleRelations = relations(vehicleTable, ({ one, many }) => ({
-  vehicleSpecification: one(vehicleSpecificationTable, {
+export const vehiclesRelations = relations(vehicleTable, ({ one, many }) => ({
+  vehicleSpec: one(vehicleSpecificationTable, {
     fields: [vehicleTable.vehicleSpecId],
     references: [vehicleSpecificationTable.vehicleSpecId],
   }),
-  bookings: many(bookingTable),
+  bookings: many(bookingsTable),
 }));
 
-// Locations Relations
-export const locationRelations = relations(locationTable, ({ many }) => ({
-  bookings: many(bookingTable),
-}));
-
-// Bookings Relations
-export const bookingRelations = relations(bookingTable, ({ one, many }) => ({
+export const bookingsRelations = relations(bookingsTable, ({ one, many }) => ({
   user: one(userTable, {
-    fields: [bookingTable.userId],
+    fields: [bookingsTable.userId],
     references: [userTable.userId],
   }),
   vehicle: one(vehicleTable, {
-    fields: [bookingTable.vehicleId],
+    fields: [bookingsTable.vehicleId],
     references: [vehicleTable.vehicleId],
   }),
-  location: one(locationTable, {
-    fields: [bookingTable.locationId],
-    references: [locationTable.locationId],
+  location: one(locations, {
+    fields: [bookingsTable.locationId],
+    references: [locations.locationId],
   }),
-  payments: many(paymentTable),
+  payments: many(payments),
 }));
 
-// Payments Relations
-export const paymentRelations = relations(paymentTable, ({ one }) => ({
-  booking: one(bookingTable, {
-    fields: [paymentTable.bookingId],
-    references: [bookingTable.bookingId],
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  booking: one(bookingsTable, {
+    fields: [payments.bookingId],
+    references: [bookingsTable.bookingId],
   }),
 }));
 
-// Customer Support Tickets Relations
-export const customerSupportTicketRelations = relations(customerSupportTicketTable, ({ one }) => ({
+export const supportTicketsRelations = relations(customerSupportTicketTable, ({ one }) => ({
   user: one(userTable, {
     fields: [customerSupportTicketTable.userId],
     references: [userTable.userId],
   }),
 }));
-
-// --- Inferred Types ---
-
-export type TUserInsert = typeof userTable.$inferInsert;
-export type TUserSelect = typeof userTable.$inferSelect;
-
-export type TVehicleSpecificationInsert = typeof vehicleSpecificationTable.$inferInsert;
-export type TVehicleSpecificationSelect = typeof vehicleSpecificationTable.$inferSelect;
-
-export type TVehicleInsert = typeof vehicleTable.$inferInsert;
-export type TVehicleSelect = typeof vehicleTable.$inferSelect;
-
-export type TLocationInsert = typeof locationTable.$inferInsert;
-export type TLocationSelect = typeof locationTable.$inferSelect;
-
-export type TBookingInsert = typeof bookingTable.$inferInsert;
-export type TBookingSelect = typeof bookingTable.$inferSelect;
-
-export type TPaymentInsert = typeof paymentTable.$inferInsert;
-export type TPaymentSelect = typeof paymentTable.$inferSelect;
-
-export type TCustomerSupportTicketInsert = typeof customerSupportTicketTable.$inferInsert;
-export type TCustomerSupportTicketSelect = typeof customerSupportTicketTable.$inferSelect;

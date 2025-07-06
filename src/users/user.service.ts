@@ -1,3 +1,4 @@
+
 import { desc, eq } from "drizzle-orm";
 import db from "../drizzle/db";
 import { TUserInsert, TUserSelect, userTable } from "../drizzle/schema";
@@ -9,6 +10,9 @@ import { TUserInsert, TUserSelect, userTable } from "../drizzle/schema";
 //Get all users
 export const getUsersServices = async():Promise<TUserSelect[] | null> => {
      return await  db.query.userTable.findMany({
+      with:{
+        bookings:true,
+      },
        orderBy:[desc(userTable.userId)]
      });
 }
@@ -16,6 +20,9 @@ export const getUsersServices = async():Promise<TUserSelect[] | null> => {
 //Get user by ID
 export const getUserByIdServices = async(userId: number):Promise<TUserSelect | undefined>=> {
       return await db.query.userTable.findFirst({
+        with:{
+        bookings:true
+      },
         where: eq(userTable.userId,userId)
       }) 
 }

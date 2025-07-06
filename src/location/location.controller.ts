@@ -1,4 +1,4 @@
-// src/controllers/location.controller.ts
+
 
 import { Request, Response } from "express";
 import {
@@ -48,7 +48,7 @@ export const createLocation = async (req: Request, res: Response) => {
   const {
     name,
     address,
-    contactPhone,
+    contact,
   } = req.body;
 
   // Basic validation
@@ -61,7 +61,7 @@ export const createLocation = async (req: Request, res: Response) => {
     const message = await createLocationService({
       name,
       address,
-      contactPhone,
+      contact,
       
     });
     res.status(201).json({ message });
@@ -81,7 +81,7 @@ export const updateLocation = async (req: Request, res: Response) => {
   const {
     name,
     address,
-    contactPhone,
+    contact,
   } = req.body;
 
   // No specific validation for update, as partial updates are allowed
@@ -94,7 +94,7 @@ export const updateLocation = async (req: Request, res: Response) => {
     const message = await updateLocationService(id, {
       name,
       address,
-      contactPhone,
+      contact,
       
     });
     res.status(200).json({ message });

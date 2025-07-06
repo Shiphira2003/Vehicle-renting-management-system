@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { createUserServices, deleteUserServices, getUserByIdServices, getUsersServices, updateUserServices } from "./user.service";
+import {
+     createUserServices,
+      deleteUserServices,
+       getUserByIdServices, 
+       getUsersServices, 
+       updateUserServices
+     } from "./user.service";
 
 //Business logic for user-related operations
 

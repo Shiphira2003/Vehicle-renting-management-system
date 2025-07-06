@@ -1,24 +1,32 @@
-import { eq, } from "drizzle-orm";
-import db from "../drizzle/db"; 
-import { vehicleTable} from "../drizzle/schema";
-import type { InferModel } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import db from "../drizzle/db";
+import { vehicleTable, vehicleSpecificationTable } from "../drizzle/schema"; 
+import type { TVehicleInsert, TVehicleSelect } from "../drizzle/schema";
 
-// Define types for inserting and selecting vehicles
-export type TVehicleInsert = InferModel<typeof vehicleTable, "insert">;
-export type TVehicleSelect = InferModel<typeof vehicleTable, "select">;
-
-
-export const getVehiclesService = async (): Promise<TVehicleSelect[]> => {
-  return await db.query.vehicleTable.findMany();
+// Define a new type for Vehicle with its spec
+// This combines the vehicle select type with the nested vehicle specification select type
+export type TVehicleWithSpecSelect = TVehicleSelect & {
+  vehicleSpec?: typeof vehicleSpecificationTable.$inferSelect;
 };
 
 
-export const getVehicleByIdService = async (id: number): Promise<TVehicleSelect | undefined> => {
-  return await db.query.vehicleTable.findFirst({
-    where: eq(vehicleTable.vehicleId, id),
+export const getVehiclesService = async (): Promise<TVehicleWithSpecSelect[]> => {
+  return await db.query.vehicleTable.findMany({
+    with: {
+      vehicleSpec: true, 
+    },
   });
 };
 
+
+export const getVehicleByIdService = async (id: number): Promise<TVehicleWithSpecSelect | undefined> => {
+  return await db.query.vehicleTable.findFirst({
+    where: eq(vehicleTable.vehicleId, id),
+    with: {
+      vehicleSpec: true,
+    },
+  });
+};
 
 
 export const createVehicleService = async (

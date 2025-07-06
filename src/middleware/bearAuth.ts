@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 
@@ -32,7 +32,7 @@ export const verifyToken = async(token:string,secret:string)=>{
 }
 
 //AUTHORIZATION MIDDLEWARE
-export const authMiddleware = async(req: Request, res: Response,next:NextFunction,requiredRoles:string)=>{
+export const authMiddleware = async(req: Request, res: Response,requiredRoles:string)=>{
     const token = req.header('Authorization')
     if(!token){
         res.status(401).json({error:"Authorization header is missing"});
@@ -50,12 +50,12 @@ export const authMiddleware = async(req: Request, res: Response,next:NextFunctio
     if(requiredRoles === "both" && (role=== "admin" || role === "member")){
         if(decodedToken?.role === "admin" || decodedToken?.role === "member"){
             req.user === decodedToken;
-            next();
+           
             return;
         }
     }else if(role === requiredRoles){
          req.user === decodedToken;
-         next();
+        
          return;
     }else{
         res.status(403).json({error: "Forbidden: You do not have permission to access this resource"})
@@ -65,6 +65,6 @@ export const authMiddleware = async(req: Request, res: Response,next:NextFunctio
 
 
 //Middleware to check if the user is admin
-export const adminRoleAuth = async (req: Request, res: Response, next: NextFunction) => await authMiddleware(req,res,next,"admin")
-export const memberRoleAuth = async (req: Request, res: Response, next: NextFunction) => await authMiddleware(req,res,next,"member")
-export const bothRoleAuth = async (req: Request, res: Response, next: NextFunction) => await authMiddleware(req,res,next,"both")
+export const adminRoleAuth = async (req: Request, res: Response) => await authMiddleware(req,res,"admin")
+export const memberRoleAuth = async (req: Request, res: Response) => await authMiddleware(req,res,"member")
+export const bothRoleAuth = async (req: Request, res: Response) => await authMiddleware(req,res,"both")
