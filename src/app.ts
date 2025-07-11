@@ -3,7 +3,6 @@ import { vehicleSpecificationRouter } from './vehicleSpecifications/vehicleSpeci
 import express, { Application, Response } from "express";
  import { logger } from "./middleware/logger";
 import { userRouter } from "./users/user.route";
-
 import { authRouter } from "./auth/auth.route";
 import { vehicleRouter } from './vehicles/vehicles.route';
 import { locationRouter } from './location/location.route';
@@ -11,8 +10,8 @@ import { bookingRouter } from './bookings/bookings.route';
 import { paymentRouter } from './payments/payments.route';
 import { ticketRouter } from './ticket/ticket.route';
 
-// import { rateLimiterMiddleware } from "./middleware/rateLimiter";
-// import cors from "cors"
+import { rateLimiterMiddleware } from "./middleware/rateLimiter";
+import cors from "cors"
 
 
 const app:Application = express()
@@ -21,11 +20,11 @@ const app:Application = express()
 
 
 //Basic MIddleware
-// app.use(cors())
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
  app.use(logger);
-// app.use(rateLimiterMiddleware)
+app.use(rateLimiterMiddleware)
 
 //default route
 app.get('/',(req,res:Response)=>{

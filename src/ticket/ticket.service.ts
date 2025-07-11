@@ -1,15 +1,22 @@
 import { eq } from "drizzle-orm";
-import  db  from "../drizzle/db"; // Assuming your db instance is exported from here
+import  db  from "../drizzle/db";
 import { TSupportTicketInsert, TSupportTicketSelect, customerSupportTicketTable} from "../drizzle/schema"; // Assuming your table is exported from here
 
 export const getTicketsService = async (): Promise<TSupportTicketSelect[]> => {
-  return await db.query.customerSupportTicketTable.findMany();
+  return await db.query.customerSupportTicketTable.findMany({
+    with:{
+      user:true,
+    }
+  });
 };
 
 
 export const getTicketByIdService = async (id: number): Promise<TSupportTicketSelect | undefined> => {
   return await db.query.customerSupportTicketTable.findFirst({
     where: eq(customerSupportTicketTable.ticketId, id),
+     with:{
+      user:true,
+    }
   });
 };
 

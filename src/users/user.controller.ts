@@ -29,7 +29,7 @@ export const getUserById = async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
         res.status(400).json({ error: "Invalid user ID" });
-         return; // Prevent further execution
+         return; 
     }
     try {
         const user = await getUserByIdServices(userId);
@@ -44,15 +44,14 @@ export const getUserById = async (req: Request, res: Response) => {
 }
 
 export const createUser = async (req: Request, res: Response) => {
-    const { firstName,lastName,email, password } = req.body;
-    if (!firstName || !lastName || !email || !password) {
+    const { firstName, lastName, email, password, contactPhone, address } = req.body;
+    if (!firstName || !lastName || !contactPhone || !address || !email || !password) {
         res.status(400).json({ error: "All fields are required" });
-        return; // Prevent further execution
+        return; 
     }
     try {
 
-        
-        const newUser = await createUserServices({ firstName,lastName, email, password });
+        const newUser = await createUserServices({ firstName, lastName, contact: contactPhone, address, email, password });
         if (newUser == null) {
             res.status(500).json({ message: "Failed to create user" });
         } else {
@@ -67,15 +66,15 @@ export const updateUser = async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
         res.status(400).json({ error: "Invalid user ID" });
-        return; // Prevent further execution
+        return; 
     }
-    const { firstName,lastName, email, password } = req.body;
-    if (!firstName || !lastName || !email || !password) {
+    const { firstName, lastName, email, password, contactPhone, address } = req.body;
+    if (!firstName || !lastName || !email || !password || !contactPhone || !address) {
         res.status(400).json({ error: "All fields are required" });
-        return; // Prevent further execution
+        return; 
     }
     try {
-        const updatedUser = await updateUserServices(userId, { firstName,lastName, email, password });
+        const updatedUser = await updateUserServices(userId, { firstName, lastName, contact: contactPhone, address, email, password });
         if (updatedUser == null) {
             res.status(404).json({ message: "User not found or failed to update" });
         } else {
@@ -92,7 +91,7 @@ export const deleteUser = async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id);  
     if (isNaN(userId)) {
         res.status(400).json({ error: "Invalid user ID" });
-        return; // Prevent further execution
+        return; 
     }
     try {
         const deletedUser = await deleteUserServices(userId);

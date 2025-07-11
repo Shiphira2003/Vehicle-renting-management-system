@@ -195,3 +195,13 @@ Content-Type: application/json
   "contact": "555-111-2222"
 }
 
+###
+
+POST http://localhost:8000/api/tickets
+{
+  "userId": 123,
+  "subject": "Login Issue: Cannot access dashboard",
+  "description": "I am unable to log in to my account. I've tried resetting my password multiple times, but it keeps saying 'invalid credentials'.",
+  "status": "Open" 
+}
+

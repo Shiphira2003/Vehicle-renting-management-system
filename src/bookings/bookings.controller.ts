@@ -25,19 +25,21 @@ export const getBookings = async (req: Request, res: Response) => {
 
 
 export const getBookingById = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
+  const bookingId = parseInt(req.params.id);
+  if (isNaN(bookingId)) {
     res.status(400).json({ error: "Invalid ID format" });
     return;
   }
 
   try {
-    const booking = await getBookingByIdService(id);
+    const booking = await getBookingByIdService(bookingId);
     if (!booking) {
       res.status(404).json({ message: "Booking not found" });
-      return;
+      
     }
-    res.status(200).json(booking);
+    else{
+    res.status(200).json(booking);  
+    }
   } catch (error:any) {
     res.status(500).json({ error:error.message || "Failed to get a booking" });
   }

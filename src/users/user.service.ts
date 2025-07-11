@@ -12,6 +12,7 @@ export const getUsersServices = async():Promise<TUserSelect[] | null> => {
      return await  db.query.userTable.findMany({
       with:{
         bookings:true,
+        supportTickets:true,
       },
        orderBy:[desc(userTable.userId)]
      });
@@ -21,7 +22,8 @@ export const getUsersServices = async():Promise<TUserSelect[] | null> => {
 export const getUserByIdServices = async(userId: number):Promise<TUserSelect | undefined>=> {
       return await db.query.userTable.findFirst({
         with:{
-        bookings:true
+        bookings:true,
+        supportTickets:true,
       },
         where: eq(userTable.userId,userId)
       }) 
