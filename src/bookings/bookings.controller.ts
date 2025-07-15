@@ -1,145 +1,119 @@
-// src/controllers/booking.controller.ts
-
 import { Request, Response } from "express";
 import {
-  createBookingService,
+  createBookingServices,
   deleteBookingService,
+  GetAllBookingService,
   getBookingByIdService,
-  getBookingsService,
-  updateBookingService,
-} from "../bookings/bookings.service"; 
+  updateBookingServices,
+  getBookingsByUserIdService // ✅ import the new service
+} from "../bookings/bookings.service";
 
-
-export const getBookings = async (req: Request, res: Response) => {
+// Get all bookings
+export const getAllBookings = async (req: Request, res: Response) => {
   try {
-    const bookings = await getBookingsService();
-    if (!bookings || bookings.length === 0) {
-      res.status(404).json({ message: "No bookings found" });
-      return;
+    const allBookings = await GetAllBookingService();
+    if (!allBookings || allBookings.length === 0) {
+      res.status(404).json({ error: "No bookings found" });
+    } else {
+      res.status(200).json(allBookings);
     }
-    res.status(200).json(bookings);
-  } catch (error:any) {
-    res.status(500).json({ error:error.message || "Failed to place bookings" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to fetch bookings" });
   }
 };
 
-
+// Get booking by ID
 export const getBookingById = async (req: Request, res: Response) => {
   const bookingId = parseInt(req.params.id);
   if (isNaN(bookingId)) {
-    res.status(400).json({ error: "Invalid ID format" });
+    res.status(400).json({ error: "Invalid booking ID" });
     return;
   }
 
   try {
-    const booking = await getBookingByIdService(bookingId);
-    if (!booking) {
-      res.status(404).json({ message: "Booking not found" });
-      
+    const bookingById = await getBookingByIdService(bookingId);
+    if (!bookingById) {
+      res.status(404).json({ error: "No booking found" });
+    } else {
+      res.status(200).json(bookingById);
     }
-    else{
-    res.status(200).json(booking);  
-    }
-  } catch (error:any) {
-    res.status(500).json({ error:error.message || "Failed to get a booking" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to fetch booking" });
   }
 };
 
+// ✅ Get bookings by User ID
+export const getBookingsByUserId = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.userId);
+  if (isNaN(userId)) {
+    res.status(400).json({ error: "Invalid user ID" });
+    return;
+  }
 
+  try {
+    const userBookings = await getBookingsByUserIdService(userId);
+    if (!userBookings || userBookings.length === 0) {
+      res.status(404).json({ error: "No bookings found for this user" });
+    } else {
+      res.status(200).json(userBookings);
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to fetch user bookings" });
+  }
+};
+
+// Create a booking
 export const createBooking = async (req: Request, res: Response) => {
-  const {
-    userId,
-    vehicleId,
-    locationId,
-    bookingDate,
-    returnDate,
-    totalAmount,
-    bookingStatus, // Optional
-  } = req.body;
+  const { bookingDate, returnDate, totalAmount, vehicleId, locationId, userId } = req.body;
 
-  // Basic validation for required fields
-  if (userId === undefined || vehicleId === undefined || locationId === undefined ||
-      !bookingDate || !returnDate || totalAmount === undefined) {
-    res.status(400).json({ error: "Missing required fields: userId, vehicleId, locationId, bookingDate, returnDate, totalAmount" });
+  if (!bookingDate || !returnDate || !totalAmount || !vehicleId || !locationId || !userId) {
+    res.status(400).json({ error: "All fields are required!" });
     return;
   }
 
   try {
-    const message = await createBookingService({
-      userId,
-      vehicleId,
-      locationId,
-      bookingDate: new Date(bookingDate).toISOString(), 
-      returnDate: new Date(returnDate).toISOString(),  
-      totalAmount,
-      bookingStatus: bookingStatus || 'Pending',
-      
-    });
-    res.status(201).json({ message });
-  } catch (error:any) {
-     res.status(500).json({ error:error.message || "Failed to place booking" });
+    const newBooking = await createBookingServices({ bookingDate, returnDate, totalAmount, vehicleId, locationId, userId });
+    res.status(201).json(newBooking);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to create booking" });
   }
 };
 
-
+// Update booking
 export const updateBooking = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).json({ error: "Invalid ID format" });
+  const bookingId = parseInt(req.params.id);
+  if (isNaN(bookingId)) {
+    res.status(400).json({ error: "Invalid booking ID" });
     return;
   }
 
-  const {
-    userId,
-    vehicleId,
-    locationId,
-    bookingDate,
-    returnDate,
-    totalAmount,
-    bookingStatus,
-  } = req.body;
+  const { bookingDate, returnDate, totalAmount } = req.body;
 
-  // No specific validation for update, as partial updates are allowed
-  if (Object.keys(req.body).length === 0) {
-    res.status(400).json({ error: "No fields provided for update" });
+  if (!bookingDate || !returnDate || !totalAmount) {
+    res.status(400).json({ error: "All fields are required!" });
     return;
   }
 
   try {
-    const message = await updateBookingService(id, {
-      userId,
-      vehicleId,
-      locationId,
-      bookingDate: bookingDate ? new Date(bookingDate).toISOString() : undefined, 
-      returnDate: returnDate ? new Date(returnDate).toISOString() : undefined,   
-      totalAmount,
-      bookingStatus,
-      
-    });
-    res.status(200).json({ message });
-  } catch (error:any) {
-    res.status(500).json({ error:error.message || "Failed to update booking:" });
+    const updated = await updateBookingServices(bookingId, { bookingDate, returnDate, totalAmount });
+    res.status(200).json(updated);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to update booking" });
   }
 };
 
-
-export const deleteBooking = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).json({ error: "Invalid ID format" });
+// Delete booking
+export const deleteBookingById = async (req: Request, res: Response) => {
+  const bookingId = parseInt(req.params.id);
+  if (isNaN(bookingId)) {
+    res.status(400).json({ error: "Invalid booking ID" });
     return;
   }
 
   try {
-    const existing = await getBookingByIdService(id);
-    if (!existing) {
-      res.status(404).json({ message: "Booking not found" });
-      return;
-    }
-
-    const message = await deleteBookingService(id);
-    res.status(200).json({ message });
-  } catch (error:any) {
-    res.status(500).json({ error:error.message || "Failed to delete booking" });
+    await deleteBookingService(bookingId);
+    res.status(200).json({ message: "Booking deleted successfully" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to delete booking" });
   }
 };

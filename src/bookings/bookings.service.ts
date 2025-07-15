@@ -1,124 +1,113 @@
-// src/services/booking.service.ts
-
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import db from "../drizzle/db";
-import {
-  TBookingInsert,
-  TBookingSelect,
-  bookingsTable,
-  userTable,      // Import userTable
-  vehicleTable,   // Import vehicleTable
-  locations,      // Import locations table
-  payments,       // Import payments table if you also want to include them
-} from "../drizzle/schema";
+import { bookingsTable, TBookingInsert, TBookingSelect } from "../drizzle/schema";
 
-// Define a new type for Booking with all its related data
-export type TBookingWithRelations = TBookingSelect & {
-  user?: typeof userTable.$inferSelect;
-  vehicle?: typeof vehicleTable.$inferSelect & { // Nested relation: vehicle with its spec
-    vehicleSpec?: typeof vehicleSpecificationTable.$inferSelect; // Assuming you want vehicleSpec too
-  };
-  location?: typeof locations.$inferSelect;
-  payments?: (typeof payments.$inferSelect)[]; // Payments are 'many', so it's an array
-};
-
-// You might also need vehicleSpecificationTable if you want nested vehicleSpec
-import { vehicleSpecificationTable } from "../drizzle/schema";
-
-
-export const getBookingsService = async (): Promise<TBookingWithRelations[]> => {
-   return await db.query.bookingsTable.findMany({
-    with: {
-      user: true,      
-      vehicle: {      
+// Get all bookings
+export const GetAllBookingService = async (): Promise<TBookingSelect[]> => {
+    return await db.query.bookingsTable.findMany({
         with: {
-          vehicleSpec: true, 
+            user: true,
+            vehicle: {
+                with: {
+                    vehicleSpec: true
+                }
+            },
+            location: true,
+            payments: true,
         },
-      },
-      location: true,  
-      payments: true,  
-    },
-  });
+        orderBy: [desc(bookingsTable.bookingId)]
+    });
 };
 
-
-export const getBookingByIdService = async (id: number): Promise<TBookingWithRelations | undefined> => {
-   return await db.query.bookingsTable.findFirst({
-    where: eq(bookingsTable.bookingId, id),
-    with: {
-      user: {
-        columns:{
-          userId:true,
-          firstName:true,
-          lastName:true,
-          email:true,
-        }
-      },
-      vehicle: {
-        columns:{
-          vehicleId:true,
-          rentalRate:true,
-          availability:true,
-        },
+// Get booking by ID
+export const getBookingByIdService = async (bookingId: number): Promise<TBookingSelect | undefined> => {
+    return await db.query.bookingsTable.findFirst({
+        where: eq(bookingsTable.bookingId, bookingId),
         with: {
-          vehicleSpec: {
-            columns:{
-              manufacturer:true,
-              model:true,
-              year:true,
-              color:true,
-              transmission:true,
-              engineCapacity:true,
-              fuelType:true,
-              seatingCapacity:true,
-              features:true,
-            }
-          },
+            user: {
+                columns: {
+                    userId: true,
+                    firstName: true,
+                    lastName: true,
+                    email: true,
+                    contact: true,
+                }
+            },
+            vehicle: {
+                columns: {
+                    vehicleId: true,
+                    rentalRate: true,
+                    availability: true,
+                },
+                with: {
+                    vehicleSpec: {
+                        columns: {
+                            manufacturer: true,
+                            model: true,
+                            year: true,
+                            color: true,
+                            transmission: true,
+                            engineCapacity: true,
+                            fuelType: true,
+                            seatingCapacity: true,
+                            features: true,
+                        }
+                    }
+                }
+            },
+            location: {
+                columns: {
+                    locationId: true,
+                    name: true,
+                    address: true,
+                    contact: true,
+                }
+            },
+            payments: {
+                columns: {
+                    bookingId: true,
+                    amount: true,
+                    paymentDate: true,
+                    paymentStatus: true,
+                    paymentMethod: true,
+                }
+            },
+        }
+    });
+};
+
+// Create booking
+export const createBookingServices = async (booking: TBookingInsert): Promise<string> => {
+    await db.insert(bookingsTable).values(booking).returning();
+    return "Booking Created Successfully";
+};
+
+// Update booking
+export const updateBookingServices = async (bookingId: number, booking: Partial<TBookingInsert>): Promise<string> => {
+    await db.update(bookingsTable).set(booking).where(eq(bookingsTable.bookingId, bookingId));
+    return "Booking Updated Successfully";
+};
+
+// Delete booking
+export const deleteBookingService = async (bookingId: number) => {
+    await db.delete(bookingsTable).where(eq(bookingsTable.bookingId, bookingId));
+    return "Booking Deleted Successfully";
+};
+
+// ✅ Get bookings by userId
+export const getBookingsByUserIdService = async (userId: number): Promise<TBookingSelect[]> => {
+    return await db.query.bookingsTable.findMany({
+        where: eq(bookingsTable.userId, userId),
+        with: {
+            user: true,
+            vehicle: {
+                with: {
+                    vehicleSpec: true,
+                },
+            },
+            location: true,
+            payments: true,
         },
-      },
-      location: {
-        columns :{
-locationId:true,
-name:true,
-address:true,
-contact:true,
-        }
-      },
-      payments: {
-        columns:{
-          bookingId:true,
-          amount:true,
-          paymentDate:true,
-          paymentStatus:true,
-          paymentMethod:true,
-        }
-      },
-    },
-  });
-  
-};
-
-
-export const createBookingService = async (
-  data: TBookingInsert
-): Promise<string> => {
-  await db.insert(bookingsTable).values(data).returning();
-  return "Booking created successfully 📅";
-};
-
-
-export const updateBookingService = async (
-  id: number,
-  data: Partial<TBookingInsert>
-): Promise<string> => {
-  await db.update(bookingsTable).set(data).where(eq(bookingsTable.bookingId, id));
-  return "Booking updated successfully 🛠️";
-};
-
-
-export const deleteBookingService = async (
-  id: number
-): Promise<string> => {
-  await db.delete(bookingsTable).where(eq(bookingsTable.bookingId, id));
-  return "Booking deleted successfully 🗑️";
+        orderBy: [desc(bookingsTable.bookingId)],
+    });
 };

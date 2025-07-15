@@ -1,27 +1,29 @@
-// src/routes/booking.routes.ts
-
-import { Router } from "express";
+import Router from "express";
 import {
-  createBooking,
-  deleteBooking,
-  getBookings,
-  getBookingById,
-  updateBooking,
-} from "../bookings/bookings.controller"; // Adjust path as needed
+    createBooking,
+    deleteBookingById,
+    getAllBookings,
+    getBookingById,
+    updateBooking,
+    getBookingsByUserId // ✅ import controller
+} from "../bookings/bookings.controller";
 
 export const bookingRouter = Router();
 
 // Get all bookings
-bookingRouter.get("/bookings", getBookings);
+bookingRouter.get('/bookings', getAllBookings);
 
-// Get a booking by ID
-bookingRouter.get("/bookings/:id", getBookingById);
+// Get booking by ID
+bookingRouter.get('/bookings/:id', getBookingById);
 
-// Create a new booking
-bookingRouter.post("/bookings", createBooking);
+// ✅ Get bookings by userId
+bookingRouter.get('/bookings/user/:userId', getBookingsByUserId);
 
-// Update an existing booking
-bookingRouter.put("/bookings/:id", updateBooking);
+// Create a booking
+bookingRouter.post('/bookings', createBooking);
 
-// Delete a booking
-bookingRouter.delete("/bookings/:id", deleteBooking);
+// Update booking
+bookingRouter.put('/bookings/:id', updateBooking);
+
+// Delete booking
+bookingRouter.delete('/bookings/:id', deleteBookingById);
