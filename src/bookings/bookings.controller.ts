@@ -7,6 +7,7 @@ import {
   updateBookingServices,
   getBookingsByUserIdService // ✅ import the new service
 } from "../bookings/bookings.service";
+import { TBookingInsert } from "../drizzle/schema"; // Import TBookingInsert for type safety
 
 // Get all bookings
 export const getAllBookings = async (req: Request, res: Response) => {
@@ -67,13 +68,14 @@ export const createBooking = async (req: Request, res: Response) => {
   const { bookingDate, returnDate, totalAmount, vehicleId, locationId, userId } = req.body;
 
   if (!bookingDate || !returnDate || !totalAmount || !vehicleId || !locationId || !userId) {
-    res.status(400).json({ error: "All fields are required!" });
+    res.status(400).json({ error: "All fields are required to create a booking!" });
     return;
   }
 
   try {
+    // The service should return the created booking object
     const newBooking = await createBookingServices({ bookingDate, returnDate, totalAmount, vehicleId, locationId, userId });
-    res.status(201).json(newBooking);
+    res.status(201).json(newBooking); // Return the full new booking object
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to create booking" });
   }
@@ -87,16 +89,17 @@ export const updateBooking = async (req: Request, res: Response) => {
     return;
   }
 
-  const { bookingDate, returnDate, totalAmount } = req.body;
+  const updatedData: Partial<TBookingInsert> = req.body; // Allow partial updates
 
-  if (!bookingDate || !returnDate || !totalAmount) {
-    res.status(400).json({ error: "All fields are required!" });
+  if (Object.keys(updatedData).length === 0) {
+    res.status(400).json({ error: "No fields provided for update" });
     return;
   }
 
   try {
-    const updated = await updateBookingServices(bookingId, { bookingDate, returnDate, totalAmount });
-    res.status(200).json(updated);
+    // The service should return the updated booking object or a success message
+    const updatedBooking = await updateBookingServices(bookingId, updatedData);
+    res.status(200).json(updatedBooking); // Return the updated booking or message
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to update booking" });
   }

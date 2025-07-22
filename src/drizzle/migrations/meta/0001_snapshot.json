@@ -1,0 +1,639 @@
+{
+  "id": "c713ce79-e30f-4d75-a224-3402917b1990",
+  "prevId": "a857e88d-d91d-4bd1-b35d-90a17a6637a0",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.bookingsTable": {
+      "name": "bookingsTable",
+      "schema": "",
+      "columns": {
+        "bookingId": {
+          "name": "bookingId",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vehicleId": {
+          "name": "vehicleId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locationId": {
+          "name": "locationId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bookingDate": {
+          "name": "bookingDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "returnDate": {
+          "name": "returnDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalAmount": {
+          "name": "totalAmount",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bookingStatus": {
+          "name": "bookingStatus",
+          "type": "bookingStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Pending'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bookingsTable_userId_userTable_userId_fk": {
+          "name": "bookingsTable_userId_userTable_userId_fk",
+          "tableFrom": "bookingsTable",
+          "tableTo": "userTable",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "userId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "bookingsTable_vehicleId_vehicleTable_vehicleId_fk": {
+          "name": "bookingsTable_vehicleId_vehicleTable_vehicleId_fk",
+          "tableFrom": "bookingsTable",
+          "tableTo": "vehicleTable",
+          "columnsFrom": [
+            "vehicleId"
+          ],
+          "columnsTo": [
+            "vehicleId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "bookingsTable_locationId_locations_locationId_fk": {
+          "name": "bookingsTable_locationId_locations_locationId_fk",
+          "tableFrom": "bookingsTable",
+          "tableTo": "locations",
+          "columnsFrom": [
+            "locationId"
+          ],
+          "columnsTo": [
+            "locationId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.customerSupportTicketTables": {
+      "name": "customerSupportTicketTables",
+      "schema": "",
+      "columns": {
+        "ticketId": {
+          "name": "ticketId",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subject": {
+          "name": "subject",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Open'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "customerSupportTicketTables_userId_userTable_userId_fk": {
+          "name": "customerSupportTicketTables_userId_userTable_userId_fk",
+          "tableFrom": "customerSupportTicketTables",
+          "tableTo": "userTable",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "userId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.locations": {
+      "name": "locations",
+      "schema": "",
+      "columns": {
+        "locationId": {
+          "name": "locationId",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contact": {
+          "name": "contact",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.payments": {
+      "name": "payments",
+      "schema": "",
+      "columns": {
+        "paymentId": {
+          "name": "paymentId",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "bookingId": {
+          "name": "bookingId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "paymentStatus": {
+          "name": "paymentStatus",
+          "type": "paymentStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Pending'"
+        },
+        "paymentDate": {
+          "name": "paymentDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "paymentMethod": {
+          "name": "paymentMethod",
+          "type": "paymentMethod",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transactionId": {
+          "name": "transactionId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "payments_bookingId_bookingsTable_bookingId_fk": {
+          "name": "payments_bookingId_bookingsTable_bookingId_fk",
+          "tableFrom": "payments",
+          "tableTo": "bookingsTable",
+          "columnsFrom": [
+            "bookingId"
+          ],
+          "columnsTo": [
+            "bookingId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.userTable": {
+      "name": "userTable",
+      "schema": "",
+      "columns": {
+        "userId": {
+          "name": "userId",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "firstname": {
+          "name": "firstname",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastname": {
+          "name": "lastname",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contact": {
+          "name": "contact",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
+        },
+        "imageUrl": {
+          "name": "imageUrl",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "userTable_email_unique": {
+          "name": "userTable_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicleSpecificationTables": {
+      "name": "vehicleSpecificationTables",
+      "schema": "",
+      "columns": {
+        "vehicleSpecId": {
+          "name": "vehicleSpecId",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "manufacturer": {
+          "name": "manufacturer",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model": {
+          "name": "model",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fuelType": {
+          "name": "fuelType",
+          "type": "fuelType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "engineCapacity": {
+          "name": "engineCapacity",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transmission": {
+          "name": "transmission",
+          "type": "transmission",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seatingCapacity": {
+          "name": "seatingCapacity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "features": {
+          "name": "features",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicleTable": {
+      "name": "vehicleTable",
+      "schema": "",
+      "columns": {
+        "imageUrl": {
+          "name": "imageUrl",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vehicleId": {
+          "name": "vehicleId",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "vehicleSpecId": {
+          "name": "vehicleSpecId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rentalRate": {
+          "name": "rentalRate",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "availability": {
+          "name": "availability",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "vehicleTable_vehicleSpecId_vehicleSpecificationTables_vehicleSpecId_fk": {
+          "name": "vehicleTable_vehicleSpecId_vehicleSpecificationTables_vehicleSpecId_fk",
+          "tableFrom": "vehicleTable",
+          "tableTo": "vehicleSpecificationTables",
+          "columnsFrom": [
+            "vehicleSpecId"
+          ],
+          "columnsTo": [
+            "vehicleSpecId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.bookingStatus": {
+      "name": "bookingStatus",
+      "schema": "public",
+      "values": [
+        "Pending",
+        "Confirmed",
+        "Completed",
+        "Cancelled"
+      ]
+    },
+    "public.fuelType": {
+      "name": "fuelType",
+      "schema": "public",
+      "values": [
+        "Petrol",
+        "Diesel",
+        "Electric",
+        "Hybrid"
+      ]
+    },
+    "public.paymentMethod": {
+      "name": "paymentMethod",
+      "schema": "public",
+      "values": [
+        "Stripe",
+        "Mpesa"
+      ]
+    },
+    "public.paymentStatus": {
+      "name": "paymentStatus",
+      "schema": "public",
+      "values": [
+        "Pending",
+        "Paid",
+        "Failed"
+      ]
+    },
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "user",
+        "admin",
+        "disabled"
+      ]
+    },
+    "public.transmission": {
+      "name": "transmission",
+      "schema": "public",
+      "values": [
+        "Manual",
+        "Automatic"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

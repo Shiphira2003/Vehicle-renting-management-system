@@ -11,6 +11,19 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+
+async function sendBookingEmail(to: string, vehicleName: string, totalAmount: number) {
+  await transporter.sendMail({
+    from: '"Your Car Rental" <no-reply@yourcompany.com>',
+    to,
+    subject: 'Booking Confirmation',
+    text: `Thank you for booking the ${vehicleName}. Total: $${totalAmount.toFixed(2)}.`,
+  });
+}
+
+// After saving booking to DB:
+
+
 // //callback fn
 
 // transporter.verify((success,error)=>{

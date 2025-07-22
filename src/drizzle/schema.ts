@@ -21,6 +21,7 @@ export const userTable = pgTable("userTable", {
   contact: varchar("contact", { length: 20 }),
   address: varchar("address", { length: 255 }),
   role: roleEnum("role").default("user").notNull(),
+  imageUrl: varchar("imageUrl", { length: 255 }),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow(),
 });
@@ -47,6 +48,7 @@ export const vehicleSpecificationTable = pgTable("vehicleSpecificationTables", {
 
 
 export const vehicleTable = pgTable("vehicleTable", {
+  imageUrl: varchar("imageUrl", { length: 255 }),
   vehicleId: serial("vehicleId").primaryKey(),
   vehicleSpecId: integer("vehicleSpecId")
     .notNull()

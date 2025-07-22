@@ -67,7 +67,7 @@ export const loginUser = async (req: Request, res: Response) => {
             }
 
             let secret = process.env.JWT_SECRET as string;
-
+// console.log (payload)
             const token = jwt.sign(payload, secret)
 
             res.status(200).json({ token, userId: existingUser.userId, email: existingUser.email, firstName: existingUser.firstName,lastName: existingUser.lastName, role: existingUser.role })
