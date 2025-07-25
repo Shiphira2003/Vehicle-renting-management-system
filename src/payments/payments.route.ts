@@ -1,3 +1,4 @@
+// === src/modules/payment/payment.routes.ts ===
 import { Router } from "express";
 import {
   createPayment,
@@ -5,25 +6,19 @@ import {
   getPayments,
   getPaymentById,
   updatePayment,
-  getPaymentsByUserId, // ✅ import new controller
-} from "../payments/payments.controller";
+  createCheckoutSession,
+} from "./payments.controller";
+import { webhookHandler } from "./payments.webhook";
 
 export const paymentRouter = Router();
 
-// Get all payments
 paymentRouter.get("/payments", getPayments);
-
-// ✅ Get all payments for a specific user
-paymentRouter.get("/payments/user/:userId", getPaymentsByUserId);
-
-// Get a payment by ID
-paymentRouter.get("/payments/:id", getPaymentById);
-
-// Create a new payment
 paymentRouter.post("/payments", createPayment);
-
-// Update an existing payment
+paymentRouter.get("/payments/:id", getPaymentById);
 paymentRouter.put("/payments/:id", updatePayment);
-
-// Delete a payment
 paymentRouter.delete("/payments/:id", deletePayment);
+paymentRouter.post("/payments/checkout-session", createCheckoutSession);
+paymentRouter.post("/webhook", webhookHandler);
+
+
+
