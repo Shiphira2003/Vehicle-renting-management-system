@@ -1,10 +1,5 @@
-import { createVehicleSpecificationService } from './vehicleSpecifications.service';
-import { vehicleSpecificationTable } from './../drizzle/schema';
-
-
 import { Router } from "express";
 import {
-  
   createVehicleSpecification,
   deleteVehicleSpecification,
   getVehicleSpecifications,
@@ -18,6 +13,9 @@ export const vehicleSpecificationRouter = Router();
 // Get all vehicle specifications
 vehicleSpecificationRouter.get("/vehicle-specifications", getVehicleSpecifications);
 
+// Search vehicle specifications by manufacturer
+vehicleSpecificationRouter.get("/vehicle-specifications/search", searchByManufacturer);
+
 // Get a vehicle specification by ID
 vehicleSpecificationRouter.get("/vehicle-specifications/:id", getVehicleSpecificationById);
 
@@ -29,6 +27,3 @@ vehicleSpecificationRouter.put("/vehicle-specifications/:id", updateVehicleSpeci
 
 // Delete a vehicle specification
 vehicleSpecificationRouter.delete("/vehicle-specifications/:id", deleteVehicleSpecification);
-
-// search by manufacturer
-vehicleSpecificationRouter.get("/vehicle-specifications", searchByManufacturer);

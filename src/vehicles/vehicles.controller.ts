@@ -3,11 +3,10 @@ import {
   createVehicleService,
   deleteVehicleService,
   getVehicleByIdService,
-
   getVehiclesService,
+  getFilteredVehiclesService,
   updateVehicleService,
 } from "../vehicles/vehicle.service"; 
-
 
 export const getVehicles = async (req: Request, res: Response) => {
   try {
@@ -17,11 +16,10 @@ export const getVehicles = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json(vehicles);
-  } catch (error:any) {
-    res.status(500).json({ error:error.message || "Failed to fetch vehicles" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to fetch vehicles" });
   }
 };
-
 
 export const getVehicleById = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
@@ -37,39 +35,39 @@ export const getVehicleById = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json(vehicle);
-  } catch (error:any) {
-    res.status(500).json({ error:error.message || "Failed to get vehicle" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to get vehicle" });
   }
 };
 
+export const getFilteredVehicles = async (req: Request, res: Response) => {
+  try {
+    const { manufacturer, maxDailyPrice, sort } = req.query;
+    
+    const vehicles = await getFilteredVehiclesService({
+      manufacturer: manufacturer as string,
+      maxDailyPrice: maxDailyPrice ? Number(maxDailyPrice) : undefined,
+      sort: sort as 'dailyRateAsc' | 'dailyRateDesc' | 'yearDesc' | 'yearAsc'
+    });
 
-// export const getVehiclesByName = async (req: Request, res: Response, next: NextFunction) => {
-//   const name = req.params.name; // Extract the name from the URL parameters
-//   if (!name) {
-//     res.status(400).json({ error: "Manufacturer name is required" }); // Ensure name is provided
-//     return;
-//   }
-
-//   try {
-//     const vehicles = await getVehiclesByNameService(name); // Call the service function
-//     if (!vehicles || vehicles.length === 0) {
-//       res.status(404).json({ message: `No vehicles found from manufacturer like '${name}'` });
-//       return;
-//     }
-//     res.status(200).json(vehicles);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    if (!vehicles || vehicles.length === 0) {
+      res.status(404).json({ message: "No vehicles found matching your criteria" });
+      return;
+    }
+    
+    res.status(200).json(vehicles);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to filter vehicles" });
+  }
+};
 
 export const createVehicle = async (req: Request, res: Response) => {
   const {
     vehicleSpecId,
     rentalRate,
-    availability, // Optional
+    availability,
   } = req.body;
 
-  // Basic validation 
   if (vehicleSpecId === undefined || rentalRate === undefined) {
     res.status(400).json({ error: "Missing required fields: vehicleSpecId, rentalRate" });
     return;
@@ -79,15 +77,13 @@ export const createVehicle = async (req: Request, res: Response) => {
     const message = await createVehicleService({
       vehicleSpecId,
       rentalRate,
-      availability: availability !== undefined ? availability : true, 
-      
+      availability: availability !== undefined ? availability : true,
     });
     res.status(201).json({ message });
-  } catch (error:any) {
-    res.status(500).json({ error:error.message || "Failed to add vehicle" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to add vehicle" });
   }
 };
-
 
 export const updateVehicle = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
@@ -102,7 +98,6 @@ export const updateVehicle = async (req: Request, res: Response) => {
     availability,
   } = req.body;
 
-  // No specific validation for update, as partial updates are allowed
   if (Object.keys(req.body).length === 0) {
     res.status(400).json({ error: "No fields provided for update" });
     return;
@@ -113,14 +108,12 @@ export const updateVehicle = async (req: Request, res: Response) => {
       vehicleSpecId,
       rentalRate,
       availability,
-      
     });
     res.status(200).json({ message });
-  } catch (error:any) {
-    res.status(500).json({ error:error.message || "Failed to update vehicle" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to update vehicle" });
   }
 };
-
 
 export const deleteVehicle = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
@@ -138,7 +131,7 @@ export const deleteVehicle = async (req: Request, res: Response) => {
 
     const message = await deleteVehicleService(id);
     res.status(200).json({ message });
-  } catch (error:any) {
-   res.status(500).json({ error:error.message || "Failed to delete vehicle" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to delete vehicle" });
   }
 };

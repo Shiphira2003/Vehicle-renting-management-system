@@ -9,7 +9,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export const webhookHandler = async (req: Request, res: Response) => {
-
   const sig = req.headers["stripe-signature"];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -20,57 +19,58 @@ export const webhookHandler = async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error("⚠ Webhook signature verification failed:", err.message);
     res.status(400).send(`Webhook Error: ${err.message}`);
-    return
+    return;
   }
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-   
-   const bookingId = session.metadata?.bookingId;
-   console.log(bookingId);
+
+    const bookingId = session.metadata?.bookingId;
     const userId = session.metadata?.userId;
-    console.log(userId);
     const transactionId = session.payment_intent as string;
-    console.log(transactionId);
     const amount = session.amount_total;
-    
+
+    console.log("📦 Metadata received:", {
+      bookingId,
+      userId,
+      transactionId,
+      amount,
+    });
 
     if (!bookingId || !userId || !transactionId || !amount) {
       console.error("❌ Missing required metadata (bookingId, userId, transactionId, amount)");
-      res.status(400).json({ error: "Missing required metadata" }); // ✅ no return
-return; // just return to stop execution
-
+      res.status(400).json({ error: "Missing required metadata" });
+      return;
     }
 
-    // ✅ Convert Stripe status to valid enum value
-    let paymentStatus: "pending" | "Paid" | "Failed" = "pending";
-
-    const stripeStatus = session.payment_status as string;
+    // Convert Stripe payment status
+    let paymentStatus: "Pending" | "Paid" | "Failed" = "Pending";
+    const stripeStatus = session.payment_status?.toLowerCase();
 
     if (stripeStatus === "paid") {
       paymentStatus = "Paid";
-    } else if (stripeStatus === "unpaid" || stripeStatus === "Failed") {
+    } else if (stripeStatus === "unpaid" || stripeStatus === "failed") {
       paymentStatus = "Failed";
     }
 
     try {
       console.log(`💰 Saving payment for booking ${bookingId}`);
-    await db.insert(payments).values({
-  bookingId: Number(bookingId),
-  userId: Number(userId),
-  amount: parseFloat((amount / 100).toFixed(2)), // convert cents to decimal
-  paymentStatus,
-  transactionId,
-  paymentMethod: "Stripe", // Optional: set default
-});
+
+      await db.insert(payments).values({
+        bookingId: Number(bookingId),
+        amount: (amount / 100).toFixed(2), // numeric as string
+        paymentStatus,
+        transactionId,
+        paymentMethod: "Stripe",
+      });
+
       console.log(`✅ Payment recorded for booking ${bookingId}`);
     } catch (err) {
       console.error("❌ Failed to save payment in DB", err);
       res.status(500).json({ error: "Database insert failed" });
-      return
+      return;
     }
   }
 
   res.status(200).json({ received: true });
-  return
 };

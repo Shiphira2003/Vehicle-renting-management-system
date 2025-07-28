@@ -1,19 +1,10 @@
-// src/services/vehicleSpecification.service.ts
-
 import { eq, ilike } from "drizzle-orm";
 import db from "../drizzle/db"; 
-import {TVehicleSpecificationInsert, TVehicleSpecificationSelect, vehicleSpecificationTable } from "../drizzle/schema"; 
-// import type { InferModel } from "drizzle-orm";
-
-// // Define types for inserting and selecting vehicle specifications
-// export type TVehicleSpecificationInsert = InferModel<typeof vehicleSpecificationTable, "insert">;
-// export type TVehicleSpecificationSelect = InferModel<typeof vehicleSpecificationTable, "select">;
-
+import { TVehicleSpecificationInsert, TVehicleSpecificationSelect, vehicleSpecificationTable } from "../drizzle/schema"; 
 
 export const getVehicleSpecificationsService = async (): Promise<TVehicleSpecificationSelect[]> => {
   return await db.query.vehicleSpecificationTable.findMany();
 };
-
 
 export const getVehicleSpecificationByIdService = async (id: number): Promise<TVehicleSpecificationSelect | undefined> => {
   return await db.query.vehicleSpecificationTable.findFirst({
@@ -21,6 +12,14 @@ export const getVehicleSpecificationByIdService = async (id: number): Promise<TV
   });
 };
 
+export const searchByManufacturerservices = async (
+  manufacturer: string
+): Promise<TVehicleSpecificationSelect[]> => {
+  return await db.query.vehicleSpecificationTable.findMany({
+    where: ilike(vehicleSpecificationTable.manufacturer, `%${manufacturer}%`),
+    limit: 10
+  });
+};
 
 export const createVehicleSpecificationService = async (
   data: TVehicleSpecificationInsert
@@ -29,13 +28,6 @@ export const createVehicleSpecificationService = async (
   return "Vehicle specification added successfully 🚗";
 };
 
-// search by manufacturer
-export const searchByManufacturerservices = async(manufacturer: string): Promise<TVehicleSpecificationSelect[]>=>{
-  return await db.query.vehicleSpecificationTable.findMany({
-    where: ilike(vehicleSpecificationTable.manufacturer,`%${manufacturer}%`)
-  })
-}
-
 export const updateVehicleSpecificationService = async (
   id: number,
   data: Partial<TVehicleSpecificationInsert>
@@ -43,7 +35,6 @@ export const updateVehicleSpecificationService = async (
   await db.update(vehicleSpecificationTable).set(data).where(eq(vehicleSpecificationTable.vehicleSpecId, id));
   return "Vehicle specification updated successfully 🛠️";
 };
-
 
 export const deleteVehicleSpecificationService = async (
   id: number
