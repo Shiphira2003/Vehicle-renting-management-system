@@ -77,10 +77,13 @@ export const getBookingByIdService = async (bookingId: number): Promise<TBooking
 };
 
 // Create booking
-export const createBookingServices = async (booking: TBookingInsert): Promise<string> => {
-    await db.insert(bookingsTable).values(booking).returning();
-    return "Booking Created Successfully";
+export const createBookingServices = async (
+  booking: TBookingInsert
+): Promise<TBookingSelect | undefined> => {
+  const [createdBooking] = await db.insert(bookingsTable).values(booking).returning();
+  return createdBooking;
 };
+
 
 // Update booking
 export const updateBookingServices = async (bookingId: number, booking: Partial<TBookingInsert>): Promise<string> => {
